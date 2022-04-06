@@ -1,0 +1,41 @@
+---
+title: "CIROQUO"
+subtitle: "libKriging - Training"
+author: "Y. Richet, P. Havé, Y. Deville"
+date: "04/2022"
+output:
+  ioslides_presentation:
+    smaller: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## CIROQUO libKriging - Training 04/2022
+
+Prerequisites:
+
+* OS: Windows, Linux or MacOS
+* lang: R, Python, Matlab or Octave
+
+<center>
+... or in case of failure/incompatibility ...
+<br/>
+<br/>
+https://bit.ly/ciroquo-server
+</center>
+<br/>
+
+login: name, password: firstname (lowercase, no spec. char)
+
+<br/>
+<br/>
+<hr/>
+<br/>
+
+Docs & resources:
+
+<center>
+https://bit.ly/training-github
+</center>
