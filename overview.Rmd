@@ -1,0 +1,146 @@
+---
+title: "CIROQUO"
+subtitle: "libKriging - Overview"
+author: "Y. Richet, P. Havé, Y. Deville"
+date: "04/2022"
+output:
+  ioslides_presentation:
+    smaller: yes
+---
+
+## Software development
+
+* Goals:
+   * easier "technological" __implementation__ of methodologies from CIROQUO
+   * __valuing & disseminating__ CIROQUO research products
+* Limits:
+   * do not restrict CIROQUO's R&D activities
+   * do not constrain the tech. internal choices of _PA_ & _PRT_
+   * parsimony of resources (ie. software are a "secondary" target for CIROQUO)
+* Means:
+   * software experts
+   * internal skills _PRT_ & _PA_
+   * financial resources
+   * pre-existing Open Source tools
+   * DICE / ReDICE / OQUAIDO history
+
+ 
+## Software development
+
+* Constraints:
+   * __multilingualism__
+   * internal existing practice _PA_ & _PRT_
+* Opportunities:
+   * __multilingualism__
+   * __libKriging__ experiment
+* Planning:
+   * __COP__ arbitration
+   * __spontaneous__ contributions
+   * balance between __user priority__ vs. __development opportunity__
+
+
+# libKriging
+
+<center>
+***"Agnostic (multi-OS, multi-lang, few deps) <br/> library for kriging."***
+</center>
+
+
+## libKriging
+
+### Primary targets:
+
+-   __industrial grade__ software: testing, integration, releasing, ...
+-   focus on __performance__
+-   implement __standard__ kriging methods
+
+### Secondary aims:
+
+-   may be used as a library for __higher-level industrial software__ (simulation/solver, workbench: OpenTURNS, Uranie, UQLab, ...)
+-   should be installed & called from main __scripting math. lang__ (R, Python, Octave/Matlab, ...)
+-   whatever __environment__ (Windows, Linux, Mac OS)
+-   should support most kriging __practice__ & mimic __reference packages__ (DiceKriging, DACE, RobustGaSP, ...)
+
+
+
+## libKriging: project
+
+Hosted on https://github.com/libKriging:
+
+- __Language__: C++ implementation
+- __License__: Apache 2
+- __Binding__: R, Python, Octave, Matlab
+- __Testing__: from C++ _and_ bindings
+- __Cont. Integration__ / GitHub Actions:
+  - Test, Debug, Release, from
+  - Windows, Linux, MacOS for
+  - R, Python, Octave, Matlab
+- ___Benchmarking__: comparison with main kriging ref. packages_
+- __Release__: 
+  - static packages: (for most OS/lang) https://github.com/libKriging/libKriging/releases
+  - installers: CRAN, Pypi, github, ...
+
+
+
+## libKriging: previous release (v0.3)
+
+![v0.3](img/libKriging-roadmap_v0.3.png)
+
+
+## libKriging: previous release (v0.4)
+
+![v0.4](img/libKriging-roadmap_v0.4.png)
+
+
+## libKriging: current release (v0.5)
+
+* `constructor/fit`:
+  * optim: none | BFGS | Newton + multistart + ${argmax_{-log(\theta)}}\{...\}$
+  * objective: logLikelihood | leaveOneOut | logMargPost
+  * scaling (aka normalize X & y)
+  * kernels: exp | gauss | matern 3/2 | matern 5/2
+  * trend: constant | linear | interactive | quadratic
+* methods:
+  * `predict`: mean, stdev, cov
+  * `simulate`: nsim, seed
+  * `update` (not optimized)
+
+++
+
+* estimated nugget (no LOO, no Newton)
+* memoization of objective functions (speedup and mem sparsity)
+
+
+## libKriging: current release (v0.5) - Bindings
+
+* R 3.6, 4 (windows, linux, macos)
+* Python 3.6 - 3.9 (windows, linux, macos)
+* Octave (windows, linux, macos)
+* Matlab (linux, macos)
+
+<img src="img/matlab.png" alt="" style="width:800px;"/>
+
+
+## libKriging: current release (v0.5) - Bindings
+
+
+
+<!-- ✔ ⌛️ ✘ -->
+|        | Linux Ubuntu:20                             | macOS 10 & 11 (x86-64)                      | macOS 12 (ARM)**                       | Windows 10                                                                  |
+|:-------|:--------------------------------------------|:--------------------------------------------|:---------------------------------------|:----------------------------------------------------------------------------|
+| Python | <span style="color:green">✔</span> 3.6-3.10 | <span style="color:green">✔</span> 3.6-3.10 | <span style="color:green">✔</span> 3.9 | <span style="color:green">✔</span> 3.6-3.9                                  |
+| R      | <span style="color:green">✔</span> 3.6-4.1  | <span style="color:green">✔</span> 3.6-4.1  |                                        | <span style="color:green">✔</span> 3.6-4.1                                  |
+| Octave | <span style="color:green">✔</span> 5.2.0    | <span style="color:green">✔</span> 6.2      | <span style="color:green">✔</span> 6.4 | <span style="color:green">✔</span> 5.2, <span style="color:red">✘</span>6.2 |
+| Matlab | <span style="color:green">️✔</span> R2022   | <span style="color:green">✔</span> R2022**  | <span style="color:red">✘</span> R2022 | <span style="color:green">✔</span> R2022**                                  |
+
+'*': requires extra DLL
+'**': no pre-built packages
+
+## People
+
+Support by Pascal via TEAMS, Slack, Zoom, Github, …:
+
+* install requirements
+* get and compile libKriging & bindings
+* run basic tests
+
