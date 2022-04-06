@@ -1,0 +1,242 @@
+---
+title: "CIROQUO"
+subtitle: "libKriging - Install & basics"
+author: "Y. Richet, P. Havé, Y. Deville"
+date: "04/2022"
+output:
+  ioslides_presentation:
+    smaller: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+## Reference
+
+Main **entry point**:
+
+https://github.com/libKriging/libKriging
+
+<hr/>
+
+For **OS** specific issues:
+
+https://github.com/libKriging/libKriging/tree/master/docs/dev/envs
+
+
+## Comaptibility matrix
+
+<!-- ✔ ⌛️ ✘ -->
+|        | Linux Ubuntu:20                             | macOS 10 & 11 (x86-64)                      | macOS 12 (ARM)**                       | Windows 10                                                                  |
+|:-------|:--------------------------------------------|:--------------------------------------------|:---------------------------------------|:----------------------------------------------------------------------------|
+| Python | <span style="color:green">✔</span> 3.6-3.10 | <span style="color:green">✔</span> 3.6-3.10 | <span style="color:green">✔</span> 3.9 | <span style="color:green">✔</span> 3.6-3.9                                  |
+| R      | <span style="color:green">✔</span> 3.6-4.1  | <span style="color:green">✔</span> 3.6-4.1  |                                        | <span style="color:green">✔</span> 3.6-4.1                                  |
+| Octave | <span style="color:green">✔</span> 5.2.0    | <span style="color:green">✔</span> 6.2      | <span style="color:green">✔</span> 6.4 | <span style="color:green">✔</span> 5.2, <span style="color:red">✘</span>6.2 |
+| Matlab | <span style="color:green">️✔</span> R2022   | <span style="color:green">✔</span> R2022**  | <span style="color:red">✘</span> R2022 | <span style="color:green">✔</span> R2022**                                  |
+
+'*': requires extra DLL
+'**': no pre-built packages
+
+
+## Get it
+
+1. Go to: https://github.com/libKriging/libKriging/releases
+2. Get latest package:
+  * R:
+    * Windows: **r**libkriging_0.5.0.**zip**
+    * Linux: **r**libkriging_0.5.0_Linux-x86_64.**tgz**
+    * macOS: **r**libkriging_0.5.0_macOS10.15.7-x86_64.**tgz**
+  * Matlab/Octave:
+    * Windows: **m**libKriging-for-**matlab**_0.5.0_**Windows10**.zip / **m**LibKriging_0.5.0_**MINGW64**_NT10.0-x86_64.tgz
+    * Linux: **m**LibKriging_0.5.0_**Linux**-x86_64.tgz
+    * macOS: **m**LibKriging_0.5.0_**macOS**10.15.7-x86_64.tgz 
+  * Python: 
+    * Windows: **py**libkriging-0.5.0-cp**XX**-**win**_amd64.whl
+    * Linux: **py**libkriging-0.5.0-cp**XX**-**manylinux**_*.whl
+    * macOS: **py**libkriging-0.5.0-cp**XX**-**macosx**_10_15_x86_64.whl
+  * Otherwise: http://hub.irsn.cloud/ciroquo (Linux/R, Python, Matlab)
+  
+
+## Install
+
+```{r}
+install.packages("Rcpp")
+install.packages(list.files(pattern = "rlibkriging_0.5.0(.*)"), repos=NULL)
+```
+
+```{octave}
+# decompress dowloaded file, then
+addpath("path/to/mlibkriging")
+```
+
+
+```{bash}
+#pip3 install pylibkriging-0.5.0*.whl
+immport subprocess
+subprocess.check_call([sys.executable, "-m", "pip", "install", "pylibkriging-0.5.0*.whl"])
+```
+
+
+Please, fill survey
+
+## Test: build model
+
+```{r}
+X <- as.matrix(c(0.0, 0.25, 0.5, 0.8, 1.0))
+f <- function(x) 1 - 1 / 2 * (sin(12 * x) / (1 + x) + 2 * cos(7 * x) * x^5 + 0.7)
+y <- f(X)
+
+library(rlibkriging)
+k_R <- Kriging(y, X, "gauss")
+print(k_R)
+```
+
+```{octave}
+X = [0.0;0.25;0.5;0.75;1.0];
+f = @(x) 1-1/2.*(sin(12*x)./(1+x)+2*cos(7.*x).*x.^5+0.7)
+y = f(X);
+k_m = Kriging(y, X, "gauss");
+disp(k_m.summary());
+```
+
+```{python}
+import numpy as np
+X = [0.0, 0.25, 0.5, 0.8, 1.0]
+f = lambda x: (1 - 1 / 2 * (np.sin(12 * x) / (1 + x) + 2 * np.cos(7 * x) * x ** 5 + 0.7))
+y = [f(xi) for xi in X]
+
+import pylibkriging as lk
+k_py = lk.Kriging(y, X, "gauss")
+print(k_py.summary())
+```
+
+## Test: model predict
+
+```{r}
+...
+x <- as.matrix(seq(0, 1, , 100))
+p <- predict(k_R, x, TRUE, FALSE)
+
+plot(f); points(X, y)
+lines(x, p$mean, col = 'blue')
+polygon(c(x, rev(x)), c(p$mean - 2 * p$stdev, rev(p$mean + 2 * p$stdev)), 
+        border = NA, col = rgb(0, 0, 1, 0.2))
+```
+
+```{octave}
+...
+x = reshape(0:(1/99):1,100,1);
+[p_mean, p_stdev] = k_m.predict(x, true, false);
+
+h = figure(1); hold on;
+plot(x,f(x)); scatter(X,f(X));
+plot(x,p_mean,'b')
+poly = fill([x; flip(x)], [(p_mean-2*p_stdev); flip(p_mean+2*p_stdev)],
+            'b');
+set( poly, 'facealpha', 0.2); hold off;
+```
+
+```{python}
+...
+x = np.arange(0, 1, 1 / 99)
+p = k_py.predict(x, True, False)
+p = {"mean": p[0], "stdev": p[1], "cov": p[2]} 
+
+import matplotlib.pyplot as pyplot; pyplot.figure(1)
+pyplot.plot(x, [f(xi) for xi in x]); pyplot.scatter(X, [f(xi) for xi in X])
+pyplot.plot(x, p['mean'], color='blue')
+pyplot.fill(np.concatenate((x, np.flip(x))),
+            np.concatenate((p['mean'] - 2 * p['stdev'], np.flip(p['mean'] + 2 * p['stdev']))),
+            color='blue', alpha=0.2)
+pyplot.show()
+```
+
+## Test: model predict
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+X <- as.matrix(c(0.0, 0.25, 0.5, 0.8, 1.0))
+f <- function(x) 1 - 1 / 2 * (sin(12 * x) / (1 + x) + 2 * cos(7 * x) * x^5 + 0.7)
+y <- f(X)
+
+library(rlibkriging)
+k_R <- Kriging(y, X, "gauss")
+print(k_R)
+
+x <- as.matrix(seq(0, 1, , 100))
+p <- predict(k_R, x, TRUE, FALSE)
+
+plot(f); points(X, y)
+lines(x, p$mean, col = 'blue')
+polygon(c(x, rev(x)), c(p$mean - 2 * p$stdev, rev(p$mean + 2 * p$stdev)), 
+        border = NA, col = rgb(0, 0, 1, 0.2))
+```
+
+## Test: model simulate
+
+
+```{r}
+...
+s <- simulate(k_R,nsim = 10, seed = 123, x=x)
+
+plot(f); points(X,y)
+matplot(x,s,col=rgb(0,0,1,0.2),type='l',lty=1,add=T)
+```
+
+```{octave}
+...
+s = k_m.simulate(int32(10),int32(123), x);
+
+h = figure(2); hold on;
+plot(x,f(x)); scatter(X,f(X));
+for i=1:10
+   plot(x,s(:,i),'b');
+end
+hold off;
+```
+
+```{python}
+...
+s = k_py.simulate(10, 123, x)
+
+pyplot.figure(2)
+pyplot.plot(x, [f(xi) for xi in x]); pyplot.scatter(X, [f(xi) for xi in X])
+for i in range(10):
+    pyplot.plot(x, s[:, i], color='blue', alpha=0.2)
+pyplot.show()
+```
+
+
+## Test: fit objective
+
+
+```{r}
+...
+ll = function(t) logLikelihood(k_R,t)$logLikelihood
+plot( ll )
+```
+
+```{octave}
+...
+function llt = ll (tt) 
+  global k_m; 
+  llt = k_m.logLikelihood(tt)
+endfunction
+t=0:(1/99):1
+plot(t,arrayfun(@ll,t))
+```
+
+```{python}
+...
+def ll(t): return k_py.logLikelihood(t,False,False)[0]
+t = np.arange(0,1,1/99)
+
+pyplot.figure(3)
+pyplot.plot(t, [ ll(ti) for ti in t])
+pyplot.show()
+```
+
+## Fill survey :)
+
+
