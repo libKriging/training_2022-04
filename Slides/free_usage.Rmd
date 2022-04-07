@@ -1,0 +1,56 @@
+---
+title: "CIROQUO"
+subtitle: "libKriging - Free usage..."
+author: "Y. Richet, P. Havé, Y. Deville"
+date: "04/2022"
+output:
+  ioslides_presentation:
+    smaller: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval=FALSE)
+```
+
+## Free usage
+
+* import your own dataset/analytical case
+* ... or choose one in https://www.sfu.ca/~ssurjano/emulat.html
+
+
+```{r}
+X = ...
+y = ...
+k <- Kriging(y, X, "matern3_2", regmodel = "constant",
+             optim = "BFGS10", objective = "LMP")
+print(k)
+```
+
+```{octave}
+X = ...
+y = ...
+k = Kriging(y, X, "matern3_2", regmodel = "constant",
+            optim = "BFGS10", objective = "LMP")
+disp(k.summary());
+```
+
+```{python}
+X = ...
+y = ...
+k = lk.Kriging(y, X, "matern3_2", regmodel = "constant",
+               optim = "BFGS10", objective = "LMP")
+print(k.summary())
+```
+
+
+## Report issues (if any)
+
+<center>
+https://github.com/libKriging/libKriging/discussions/new
+</center>
+<br/><br/><br/><br/><br/>
+
+* provide your code
+* describe OS/lang
+* screenshot welcome
+
